@@ -9,13 +9,30 @@ import {
   StartCountdownButton,
   TaskInput
 } from "./styles"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as zod from 'zod'
+
+const newTaskValidationSchema = zod.object({
+  task: zod.string().min(1, 'Informe a tarefa'),
+  minutesAmount: zod.number()
+    .min(5, 'A tarefa precisa ser de no mínimo 5 minutos')
+    .max(60, 'A tarefa precisa ser de no máximo 60 minutors')
+})
+
+type NewTaskFormData = zod.infer<typeof newTaskValidationSchema>
 
 export const Home = () => {
   const {
     register,
     handleSubmit,
     watch
-  } = useForm();
+  } = useForm<NewTaskFormData>({
+    resolver: zodResolver(newTaskValidationSchema),
+    defaultValues: {
+      task: '',
+      minutesAmount: 0
+    }
+  });
 
   const task = watch('task')
   const minutesAmount = watch('minutesAmount')
