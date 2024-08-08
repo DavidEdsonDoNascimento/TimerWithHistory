@@ -11,6 +11,8 @@ import {
 } from "./styles"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as zod from 'zod'
+import { useState } from "react"
+import { Task } from "../../@types/task"
 
 const newTaskValidationSchema = zod.object({
   task: zod.string().min(1, 'Informe a tarefa'),
@@ -22,10 +24,15 @@ const newTaskValidationSchema = zod.object({
 type NewTaskFormData = zod.infer<typeof newTaskValidationSchema>
 
 export const Home = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+
   const {
     register,
     handleSubmit,
-    watch
+    watch,
+    reset
   } = useForm<NewTaskFormData>({
     resolver: zodResolver(newTaskValidationSchema),
     defaultValues: {
@@ -38,9 +45,25 @@ export const Home = () => {
   const minutesAmount = watch('minutesAmount')
 
   const isSubmitDisabled = !task || isNaN(minutesAmount)
+  const activeTask = tasks.find(t => t.id == activeTaskId)
 
-  const handleCreateNewTask = (data: any) => {
+  const handleCreateNewTask = (data: NewTaskFormData) => {
     console.log(data)
+    const id = new Date().getTime().toString()
+    const newTask = {
+      id,
+      name: data.task,
+      minutesAmount: data.minutesAmount
+    }
+    setTasks(t => {
+      return [
+        ...t,
+        newTask
+      ]
+    })
+    setActiveTaskId(id)
+    console.log(tasks)
+    reset();
   }
 
   return (
