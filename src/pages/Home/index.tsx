@@ -25,8 +25,8 @@ type NewTaskFormData = zod.infer<typeof newTaskValidationSchema>
 
 export const Home = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
 
   const {
     register,
@@ -42,10 +42,15 @@ export const Home = () => {
   });
 
   const task = watch('task')
-  const minutesAmount = watch('minutesAmount')
 
-  const isSubmitDisabled = !task || isNaN(minutesAmount)
+  const isSubmitDisabled = !task
   const activeTask = tasks.find(t => t.id == activeTaskId)
+  const totalSeconds = activeTask ? activeTask.minutesAmount * 60 : 0
+  const currentSeconds = activeTask ? totalSeconds - amountSecondsPassed : 0
+  const minutesAmount = Math.floor(currentSeconds / 60)
+  const secondsAmount = currentSeconds % 60
+  const minutesStr = String(minutesAmount).padStart(2, '0')
+  const secondsStr = String(secondsAmount).padStart(2, '0')
 
   const handleCreateNewTask = (data: NewTaskFormData) => {
     console.log(data)
@@ -101,11 +106,11 @@ export const Home = () => {
         </FormContainer>
 
         <CountdownContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{minutesStr[0]}</span>
+          <span>{minutesStr[1]}</span>
           <Separator>:</Separator>
-          <span>0</span>
-          <span>0</span>
+          <span>{secondsStr[0]}</span>
+          <span>{secondsStr[1]}</span>
         </CountdownContainer>
 
         <StartCountdownButton disabled={isSubmitDisabled} type="submit">
