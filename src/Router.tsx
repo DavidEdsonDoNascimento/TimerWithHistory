@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Home, History } from "./pages";
+import { Home, History, Repos } from "./pages";
 import { DefaultLayout } from "./layouts/DefaultLayout";
 
 export const Router = () => {
@@ -8,6 +8,7 @@ export const Router = () => {
       <Route path="/" element={<DefaultLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/history" element={<History />} />
+        <Route path="/d" element={<Repos />} />
       </Route>
     </Routes>
   );
