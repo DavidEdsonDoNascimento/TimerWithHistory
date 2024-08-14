@@ -11,8 +11,9 @@ import {
 } from "./styles"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as zod from 'zod'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Task } from "../../@types/task"
+import { differenceInSeconds } from "date-fns"
 
 const newTaskValidationSchema = zod.object({
   task: zod.string().min(1, 'Informe a tarefa'),
@@ -42,9 +43,17 @@ export const Home = () => {
   });
 
   const task = watch('task')
+  const activeTask = tasks.find(t => t.id == activeTaskId)
+
+  useEffect(() => {
+    if (activeTask) {
+      setInterval(() => {
+        setAmountSecondsPassed(differenceInSeconds(new Date(), activeTask.startDate))
+      }, 1000)
+    }
+  }, [activeTask])
 
   const isSubmitDisabled = !task
-  const activeTask = tasks.find(t => t.id == activeTaskId)
   const totalSeconds = activeTask ? activeTask.minutesAmount * 60 : 0
   const currentSeconds = activeTask ? totalSeconds - amountSecondsPassed : 0
   const minutesAmount = Math.floor(currentSeconds / 60)
@@ -55,11 +64,13 @@ export const Home = () => {
   const handleCreateNewTask = (data: NewTaskFormData) => {
     console.log(data)
     const id = new Date().getTime().toString()
-    const newTask = {
+    const newTask: Task = {
       id,
       name: data.task,
-      minutesAmount: data.minutesAmount
+      minutesAmount: data.minutesAmount,
+      startDate: new Date()
     }
+
     setTasks(t => {
       return [
         ...t,
