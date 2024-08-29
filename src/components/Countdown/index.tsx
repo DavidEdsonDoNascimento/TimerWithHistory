@@ -1,21 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CountdownContainer, Separator } from './styles';
 import { differenceInSeconds } from 'date-fns';
+import { TaskContext } from '../../pages/Home';
 
-type CountdownProps = {
-	minutes: string;
-	seconds: string;
-};
+export const Countdown = () => {
+	const {
+		activeTask,
+		activeTaskId,
+		tasks,
+		amountSecondsPassed,
+		changedTimer,
+		changedTaskToFinished,
+	} = useContext(TaskContext);
 
-export const Countdown = ({ minutes, seconds }: CountdownProps) => {
-	const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
-	const activeTask = tasks.find((t) => t.id == activeTaskId);
 	const totalSeconds = activeTask ? activeTask.minutesAmount * 60 : 0;
 	const currentSeconds = activeTask ? totalSeconds - amountSecondsPassed : 0;
 	const minutesAmount = Math.floor(currentSeconds / 60);
 	const secondsAmount = currentSeconds % 60;
-	const minutesStr = String(minutesAmount).padStart(2, '0');
-	const secondsStr = String(secondsAmount).padStart(2, '0');
+	const minutes = String(minutesAmount).padStart(2, '0');
+	const seconds = String(secondsAmount).padStart(2, '0');
+
+	useEffect(() => {
+		if (activeTask) {
+			document.title = `${minutes}:${seconds}`;
+		}
+	}, [minutes, seconds, activeTask]);
 
 	useEffect(() => {
 		let interval: number;
@@ -28,21 +37,12 @@ export const Countdown = ({ minutes, seconds }: CountdownProps) => {
 				);
 
 				if (secondsDifference < totalSeconds) {
-					setAmountSecondsPassed(secondsDifference);
+					changedTimer(secondsDifference);
 					return;
 				}
 
-				setTasks((state) =>
-					state.map((item) =>
-						item.id != activeTaskId
-							? item
-							: {
-									...item,
-									finishedDate: new Date(),
-							  }
-					)
-				);
-				setAmountSecondsPassed(totalSeconds);
+				changedTaskToFinished();
+				changedTimer(totalSeconds);
 				clearInterval(interval);
 			}, 1000);
 		}

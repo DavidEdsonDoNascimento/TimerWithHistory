@@ -1,18 +1,16 @@
-// import { ThemeProvider } from "styled-components";
-// import { GlobalStyle } from "./styles/global";
-// import { defaultTheme } from "./styles/themes/default";
-// import { Router } from "./Router";
-// import { BrowserRouter } from "react-router-dom";
-import { Teste } from './Teste';
+import { ThemeProvider } from 'styled-components';
+import { GlobalStyle } from './styles/global';
+import { defaultTheme } from './styles/themes/default';
+import { Router } from './Router';
+import { BrowserRouter } from 'react-router-dom';
 
 export const App = () => {
 	return (
-		<Teste />
-		// <ThemeProvider theme={defaultTheme}>
-		//   <BrowserRouter>
-		//     <Router />
-		//     <GlobalStyle />
-		//   </BrowserRouter>
-		// </ThemeProvider>
+		<ThemeProvider theme={defaultTheme}>
+			<BrowserRouter>
+				<Router />
+				<GlobalStyle />
+			</BrowserRouter>
+		</ThemeProvider>
 	);
 };
