@@ -2,9 +2,9 @@ import { Task } from '../@types/task';
 import { createContext, useState } from 'react';
 
 interface TaskContextType {
+	tasks: Task[] | [];
 	activeTask: Task | undefined;
 	activeTaskId: string | null;
-	tasks: Task[] | [];
 	amountSecondsPassed: number;
 	changedTimer: (totalSecondsElapsed: number) => void;
 	changedTaskToFinished: () => void;
@@ -87,9 +87,9 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
 	return (
 		<TaskContext.Provider
 			value={{
+				tasks,
 				activeTask,
 				activeTaskId,
-				tasks,
 				amountSecondsPassed,
 				changedTimer,
 				changedTaskToFinished,
