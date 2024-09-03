@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { CountdownContainer, Separator } from './styles';
 import { differenceInSeconds } from 'date-fns';
-import { TaskContext } from '../../pages/Home';
+import { TaskContext } from '../../contexts/TaskContext';
 
 export const Countdown = () => {
 	const {

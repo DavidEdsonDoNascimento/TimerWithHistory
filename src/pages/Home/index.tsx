@@ -4,23 +4,12 @@ import {
 	StartCountdownButton,
 	StopCountdownButton,
 } from './styles';
-import { createContext, useState } from 'react';
-import { Task } from '../../@types/task';
+import { useContext } from 'react';
 import { Countdown, NewTaskForm } from '../../components';
 import * as zod from 'zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-interface TaskContextType {
-	activeTask: Task | undefined;
-	activeTaskId: string | null;
-	tasks: Task[] | [];
-	amountSecondsPassed: number;
-	changedTimer: (totalSecondsElapsed: number) => void;
-	changedTaskToFinished: () => void;
-}
-
-export const TaskContext = createContext({} as TaskContextType);
+import { TaskContext } from '../../contexts/TaskContext';
 
 const newTaskValidationSchema = zod.object({
 	task: zod.string().min(1, 'Informe a tarefa'),
@@ -33,12 +22,7 @@ const newTaskValidationSchema = zod.object({
 type NewTaskFormData = zod.infer<typeof newTaskValidationSchema>;
 
 export const Home = () => {
-	const [tasks, setTasks] = useState<Task[]>([]);
-	const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-	const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
-
-	const activeTask = tasks.find((t) => t.id == activeTaskId);
-
+	const { activeTask, createNewTask, stopTask } = useContext(TaskContext);
 	const newTaskForm = useForm<NewTaskFormData>({
 		resolver: zodResolver(newTaskValidationSchema),
 		defaultValues: {
@@ -47,83 +31,21 @@ export const Home = () => {
 		},
 	});
 
-	const { handleSubmit, watch, reset } = newTaskForm;
+	const { handleSubmit, watch } = newTaskForm;
 
 	const task = watch('task');
 
 	const isSubmitDisabled = !task;
 
-	const changedTaskToFinished = () => {
-		setTasks((state) =>
-			state.map((item) =>
-				item.id != activeTaskId
-					? item
-					: {
-							...item,
-							finishedDate: new Date(),
-					  }
-			)
-		);
-	};
-
-	const changedTimer = (totalSecondsElapsed: number) => {
-		setAmountSecondsPassed(totalSecondsElapsed);
-	};
-
-	const handleCreateNewTask = (data: NewTaskFormData) => {
-		console.log(data);
-		const id = new Date().getTime().toString();
-		const newTask: Task = {
-			id,
-			name: data.task,
-			minutesAmount: data.minutesAmount,
-			startDate: new Date(),
-		};
-
-		setTasks((t) => {
-			return [...t, newTask];
-		});
-		setActiveTaskId(id);
-		setAmountSecondsPassed(0);
-		reset();
-	};
-
-	const handleStopTask = () => {
-		setTasks((state) =>
-			state.map((item) =>
-				item.id != activeTaskId
-					? item
-					: {
-							...item,
-							interruptedDate: new Date(),
-					  }
-			)
-		);
-		setAmountSecondsPassed(0);
-		setActiveTaskId(null);
-	};
-
 	return (
 		<HomeContainer>
-			<form onSubmit={handleSubmit(handleCreateNewTask)}>
-				<TaskContext.Provider
-					value={{
-						activeTask,
-						activeTaskId,
-						tasks,
-						amountSecondsPassed,
-						changedTimer,
-						changedTaskToFinished,
-					}}
-				>
-					<FormProvider {...newTaskForm}>
-						<NewTaskForm />
-					</FormProvider>
-					<Countdown />
-				</TaskContext.Provider>
-
+			<form onSubmit={handleSubmit(createNewTask)}>
+				<FormProvider {...newTaskForm}>
+					<NewTaskForm />
+				</FormProvider>
+				<Countdown />
 				{activeTask ? (
-					<StopCountdownButton type='button' onClick={handleStopTask}>
+					<StopCountdownButton type='button' onClick={stopTask}>
 						<HandPalm size={24} />
 						Interromper
 					</StopCountdownButton>
