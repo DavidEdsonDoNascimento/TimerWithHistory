@@ -1,6 +1,8 @@
 import { useContext } from 'react';
 import { TaskContext } from '../../contexts/TaskContext';
 import { HistoryContainer, HistoryList, Status } from './styles';
+import { formatDistanceToNow } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 
 export const History = () => {
 	const { tasks } = useContext(TaskContext);
@@ -22,10 +24,13 @@ export const History = () => {
 						{tasks.length ? (
 							tasks.map((task) => {
 								return (
-									<tr>
+									<tr key={task.id}>
 										<td>{task.name}</td>
 										<td>{task.minutesAmount} minutos</td>
-										<td>Ha cerca de 2 meses</td>
+										<td>{formatDistanceToNow(
+											task.startDate,
+											{ addSuffix: true, locale: ptBR },
+											)}</td>
 										<td>
 											{task.finishedDate ? (
 												<Status current='completed'>Concluído</Status>

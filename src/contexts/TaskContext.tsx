@@ -41,7 +41,6 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
 		};
 
 		applyChangesInTasks(id, newTask);
-		// reset();
 	};
 
 	const stopTask = () => {
