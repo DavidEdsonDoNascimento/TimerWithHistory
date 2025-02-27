@@ -45,14 +45,15 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
 
 	const stopTask = () => {
 		setTasks((state) =>
-			state.map((item) =>
-				item.id != activeTaskId
+			state.map((item) => {
+				return item.id != activeTaskId
 					? item
 					: {
 							...item,
 							interruptedDate: new Date(),
-					  }
-			)
+							// eslint-disable-next-line no-mixed-spaces-and-tabs
+					  };
+			})
 		);
 		setAmountSecondsPassed(0);
 		setActiveTaskId(null);
@@ -78,6 +79,7 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
 					: {
 							...item,
 							finishedDate: new Date(),
+							// eslint-disable-next-line no-mixed-spaces-and-tabs
 					  }
 			)
 		);
