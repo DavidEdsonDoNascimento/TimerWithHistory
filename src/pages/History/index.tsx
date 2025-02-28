@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { TaskContext } from '../../contexts/TaskContext';
 import { HistoryContainer, HistoryList, Status } from './styles';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
+import { TaskContext } from '../../contexts/TaskContext';
 
 export const History = () => {
 	const { tasks } = useContext(TaskContext);

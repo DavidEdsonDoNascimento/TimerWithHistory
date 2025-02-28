@@ -40,7 +40,7 @@ export const Home = () => {
 	const handleCreateNewTask = (data: NewTaskFormData) => {
 		createNewTask(data);
 		reset();
-	}
+	};
 
 	return (
 		<HomeContainer>

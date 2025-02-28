@@ -1,34 +1,31 @@
-import { Task } from '../@types/task';
-import { createContext, useState } from 'react';
+import {
+	NewTaskFormData,
+	Task,
+	TaskContextProviderProps,
+	TaskContextType,
+} from '../@types/task';
+import { createContext, useReducer, useState } from 'react';
 
-interface TaskContextType {
-	tasks: Task[] | [];
-	activeTask: Task | undefined;
-	activeTaskId: string | null;
-	amountSecondsPassed: number;
-	changedTimer: (totalSecondsElapsed: number) => void;
-	changedTaskToFinished: () => void;
-	createNewTask: (data: NewTaskFormData) => void;
-	stopTask: () => void;
-}
+import { tasksReducer } from '../reducers/tasks/reducer';
+import {
+	addNewTaskAction,
+	endCurrentTaskAction,
+	stopCurrentTaskAction,
+} from '../reducers/tasks/actions';
 
 export const TaskContext = createContext({} as TaskContextType);
 
-type NewTaskFormData = {
-	task: string;
-	minutesAmount: number;
-};
-
-type TaskContextProviderProps = {
-	children: React.ReactNode;
-};
-
 export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
-	const [tasks, setTasks] = useState<Task[]>([]);
-	const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+	// Dispatch envia as ações para o reducer, é como falar o pedido ao pizzaiolo
+	const [tasksState, dispatch] = useReducer(tasksReducer, {
+		tasks: [],
+		activeTaskId: '',
+	});
+
+	const { tasks, activeTaskId } = tasksState;
 	const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
-	const activeTask = tasks.find((t) => t.id == activeTaskId);
+	const activeTask = tasks.find((t: Task) => t.id == activeTaskId);
 
 	const createNewTask = (data: NewTaskFormData) => {
 		console.log(data);
@@ -40,30 +37,12 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
 			startDate: new Date(),
 		};
 
-		applyChangesInTasks(id, newTask);
+		dispatch(addNewTaskAction(newTask));
+		setAmountSecondsPassed(0);
 	};
 
 	const stopTask = () => {
-		setTasks((state) =>
-			state.map((item) => {
-				return item.id != activeTaskId
-					? item
-					: {
-							...item,
-							interruptedDate: new Date(),
-							// eslint-disable-next-line no-mixed-spaces-and-tabs
-					  };
-			})
-		);
-		setAmountSecondsPassed(0);
-		setActiveTaskId(null);
-	};
-
-	const applyChangesInTasks = (id: string, task: Task): void => {
-		setTasks((state) => {
-			return [...state, task];
-		});
-		setActiveTaskId(id);
+		dispatch(stopCurrentTaskAction());
 		setAmountSecondsPassed(0);
 	};
 
@@ -72,17 +51,7 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
 	};
 
 	const changedTaskToFinished = () => {
-		setTasks((state) =>
-			state.map((item) =>
-				item.id != activeTaskId
-					? item
-					: {
-							...item,
-							finishedDate: new Date(),
-							// eslint-disable-next-line no-mixed-spaces-and-tabs
-					  }
-			)
-		);
+		dispatch(endCurrentTaskAction());
 	};
 
 	return (
