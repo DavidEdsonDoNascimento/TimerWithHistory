@@ -25,8 +25,7 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
 	const { tasks, activeTaskId } = tasksState;
 	const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
-	const activeTask =
-		tasks.find((t: Task) => t.id == activeTaskId) || ({} as Task);
+	const activeTask = tasks.find((t: Task) => t.id == activeTaskId);
 
 	const createNewTask = (data: NewTaskFormData) => {
 		console.log(data);
