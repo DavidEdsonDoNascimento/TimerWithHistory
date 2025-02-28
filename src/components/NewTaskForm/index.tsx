@@ -15,7 +15,7 @@ export const NewTaskForm = () => {
 				placeholder='Nome da tarefa ...'
 				list='task-suggestions'
 				{...register('task')}
-				disabled={activeTask}
+				disabled={!!activeTask}
 			/>
 			<datalist id='task-suggestions'>
 				<option value='projeto 1' />
@@ -34,7 +34,7 @@ export const NewTaskForm = () => {
 				{...register('minutesAmount', {
 					valueAsNumber: true,
 				})}
-				disabled={activeTask}
+				disabled={!!activeTask}
 			/>
 
 			<span>minutos.</span>

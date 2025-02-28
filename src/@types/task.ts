@@ -14,7 +14,7 @@ export type TasksState = {
 
 export interface TaskContextType {
 	tasks: Task[] | [];
-	activeTask: Task | undefined;
+	activeTask: Task;
 	activeTaskId: string | null;
 	amountSecondsPassed: number;
 	changedTimer: (totalSecondsElapsed: number) => void;
